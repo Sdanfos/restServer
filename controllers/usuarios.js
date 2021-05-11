@@ -50,6 +50,7 @@ const usuarioPatch = (req, res = response) => {
 }
 
 
+
 module.exports = {
     usuarioGet:usuarioGet,
     usuarioPut:usuarioPut,

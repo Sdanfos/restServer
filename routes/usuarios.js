@@ -19,5 +19,4 @@ router.delete('/', usuarioDelete);
 router.patch('/', usuarioPatch);
 
 
-
 module.exports = router;
