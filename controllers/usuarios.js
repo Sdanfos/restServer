@@ -1,46 +1,84 @@
 const { response } = require('express')
+const bcryptjs = require('bcryptjs')
 
 
-const usuarioGet = (req, res = response) => {
+const Usuario = require('../models/usuario')
 
-    const {q, nombre, apellido='Sin apellido', apikey, page = 1, limit = 5} = req.query;
+
+const usuarioGet = async (req, res = response) => {
+
+    // const {q, nombre, apellido='Sin apellido', apikey, page = 1, limit = 5} = req.query;
+    const { limite = 5, desde = 0  } = req.query;
+    const query = {estado:true}
+    let limit =  Number(limite);
+    let desd = Number(desde);
+    if(isNaN(limit) || isNaN(desd)){
+        res.json({
+            msg: 'desde y limite deben de ser numeros'
+        });
+    }
+
+    const [total, usuarios] = await Promise.all([
+        Usuario.countDocuments(query),
+        Usuario.find(query)
+            .skip(Number(desd))
+            .limit(Number(limit))
+    ]);
 
     res.json({
-        msg: "get Api - controller",
-        q,
-        nombre,
-        apellido,
-        apikey,
-        page,
-        limit
+
+        total,
+        usuarios
     })
 }
 
-const usuarioPut = (req, res = response) => {
+const usuarioPut = async (req, res = response) => {
 
-    const id = req.params.id;
+    const {id} = req.params;
+    const { _id ,password, google, correo, ...resto } = req.body;
 
-    res.status(500).json({
-        msg: "put Api - controller",
-        id
-    });
+    if( password ) {
+        //Encriptar contraseña
+        const salt = bcryptjs.genSaltSync(10);
+        resto.password = bcryptjs.hashSync( password, salt );
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(id, resto)
+
+
+    res.json(usuario);
 }
 
-const usuarioPost = (req, res = response) => {
+const usuarioPost = async (req, res = response) => {
 
-    const {name, age} = req.body;
+
+
+    const {nombre, correo, password, rol} = req.body;
+    const usuario = new Usuario({nombre, correo, password, rol});
+
+
+    //Encriptar contraseña
+    const salt = bcryptjs.genSaltSync(10);
+    usuario.password = bcryptjs.hashSync( password, salt )
+
+    //Guardar BD
+    await usuario.save();
 
     res.json({
         msg: 'post Api - controller',
-        name,
-        age
+        usuario
     });
 }
 
-const usuarioDelete = (req, res = response) => {
-    res.json({
-        msg: "delete Api - controller"
-    })
+const usuarioDelete = async (req, res = response) => {
+    const {id} = req.params;
+
+    //Borrar fisicamente
+    // const usuario = await Usuario.findByIdAndDelete(id);
+
+    const usuario = await Usuario.findByIdAndUpdate(id , {estado:false});
+
+    res.json( usuario)
 }
 
 const usuarioPatch = (req, res = response) => {
