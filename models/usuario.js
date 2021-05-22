@@ -4,16 +4,16 @@ const { Schema, model } = require('mongoose');
 const UsuarioSchema = Schema({
     nombre: {
         type:String,
-        require:[true, 'El nombre es obligatorio']
+        required:[true, 'El nombre es obligatorio']
     },
     correo: {
         type: String,
-        require: [true, 'El correo es obligatoria'],
+        required: [true, 'El correo es obligatoria'],
         unique: true
     },
     password: {
         type: String,
-        require: [true, 'La contraseña es obligatoria']
+        required: [true, 'La contraseña es obligatoria']
     },
     img: {
         type: String
@@ -22,7 +22,7 @@ const UsuarioSchema = Schema({
         type: String,
         require: true,
         default: 'USER_ROLE',
-        emun: ['ADMIN_ROLE', 'USER_ROLE']
+        emun: ['ADMIN_ROLE', 'USER_ROLE', 'VENTAS_ROLE']
     },
     estado: {
         type: Boolean,
