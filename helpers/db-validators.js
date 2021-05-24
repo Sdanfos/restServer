@@ -30,12 +30,23 @@ const validarCategoria = async (id = '') => {
         throw new Error(`La categoria ${id} no existe`)
     }
 }
-
+// Validar productos existentes
 const validarProducto = async (id = '') => {
     const existeProducto = await Producto.findById(id);
     if(!existeProducto){
         throw new Error(`El producto ${id}, no existe`)
     }
+}
+
+// Validar colecciones permitidas
+const coleccionesPermitidas = (coleccion = '', colecciones = []) => {
+
+    const incluida = colecciones.includes(coleccion);
+    if(!incluida) {
+        throw new Error(`La coleccion ${coleccion} no es pemitida, ${colecciones}`);
+    }
+
+    return true;
 }
 
 
@@ -44,5 +55,6 @@ module.exports = {
     validarEmail,
     existeUsuarioId,
     validarCategoria,
-    validarProducto
+    validarProducto,
+    coleccionesPermitidas
 }
